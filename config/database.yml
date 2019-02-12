@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: db
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password:
+
+development:
+  <<: *default
+  database: loja-api_development
+
+test:
+  <<: *default
+  database: loja-api_test
+
+production:
+  <<: *default
+  database: loja-api_production
+  username: loja-api
+  password: <%= ENV['LOJA-API_DATABASE_PASSWORD'] %>
