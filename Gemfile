@@ -34,6 +34,8 @@ group :development, :test do
   # TDD
   gem 'rspec-rails', '~> 3.8', '>= 3.8.1'
   gem 'factory_bot_rails', '~> 4.11', '>= 4.11.1'
+  # Clear database
+  gem 'database_cleaner'
 end
 
 group :development do
