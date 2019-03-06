@@ -1,17 +1,10 @@
 FactoryBot.define do 
+
   factory :user do
-    sequence(:name)     { |n| "Name ##{n}" }
-    role                { ["manager", "seller"].sample }
-    sequence(:login)    { |n| "Login ##{n}" }
-    sequence(:password) { |n| "Password ##{n}" }
-
-    # trait :manager do
-    #   role { "manager" }
-    # end
-
-    # trait :seller do
-    #   role { "seller" }
-    # end
-
+    name                       { Faker::Name.name }
+    role                       { "manager" }
+    email                      { Faker::Internet.email }
+    password                   { Faker::Internet.password(8) }
   end
+
 end

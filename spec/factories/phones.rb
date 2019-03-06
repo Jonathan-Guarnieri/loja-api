@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :phone do
-    number { Faker::PhoneNumber.cell_phone }
+    number { "49 3553-0000" }
     association :contact 
   end
 end

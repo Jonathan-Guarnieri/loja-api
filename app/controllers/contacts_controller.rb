@@ -30,6 +30,7 @@ class ContactsController < ApplicationController
 
   def destroy
     @contact.destroy
+    head :no_content
   end
 
 
@@ -45,7 +46,7 @@ class ContactsController < ApplicationController
       :address, 
       :document,
       :kind,
-      :phones_attributes =>  [:id, :number]
+      :phones_attributes => :number
     )
   end
 

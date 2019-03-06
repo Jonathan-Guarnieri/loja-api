@@ -10,9 +10,14 @@ RSpec.describe User, type: :model do
 
     it 'return ArgumentError for invalid role' do
       expect{
-        User.new(:name => "user.name", :role => "invalid role", :login => "user.login", :password => "user.password" )
+        User.new(:name => "user.name", :role => "invalid role", :email => "user.email", :password => "user.password" )
       }.to raise_error(ArgumentError)
     end
+
+    # it 'return ArgumentError for invalid password' do
+    # VALIDAÇÃO DO TAMANHO MÍNIMO DA PASSWORD: FAZER NO FRONT-END!!!
+    #   expect{FactoryBot.create(:user, password: "")}.to raise_error(ArgumentError)
+    # end
 
   end
 end

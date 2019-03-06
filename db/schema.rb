@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_22_123016) do
+ActiveRecord::Schema.define(version: 2019_03_06_180048) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,17 @@ ActiveRecord::Schema.define(version: 2019_02_22_123016) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.integer "order_type"
+    t.bigint "contact_id"
+    t.bigint "user_id"
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_orders_on_contact_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
   create_table "phones", force: :cascade do |t|
     t.string "number"
     t.bigint "contact_id"
@@ -32,14 +43,29 @@ ActiveRecord::Schema.define(version: 2019_02_22_123016) do
     t.index ["contact_id"], name: "index_phones_on_contact_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "products", force: :cascade do |t|
     t.string "name"
-    t.integer "role"
-    t.string "login"
-    t.string "password"
+    t.float "purchase_price"
+    t.float "sale_price"
+    t.integer "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.integer "role"
+    t.string "email"
+    t.string "password"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "provider", default: "email", null: false
+    t.string "uid", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.json "tokens"
+  end
+
+  add_foreign_key "orders", "contacts"
+  add_foreign_key "orders", "users"
   add_foreign_key "phones", "contacts"
 end
