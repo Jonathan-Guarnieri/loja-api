@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :order do
+    association :contact
+    association :user
     order_type   { [ "purchase","sale" ].sample } # automatizar conforme contact.kind
-    contact_id   { Contact.order(Arel.sql('RANDOM()')).first[:id] } # otimizar?
-    user_id      { User.last.id } # tentar acessar o current_user
-    status       { [ "budget", "production", "delivered", "canceled" ].sample }
+    status       { [ "budget", "production", "delivered" ].sample } # não colocar canceled, 
+    # pois este estatus será usado no teste de update (*ver teste*)                   # mudar isso!
   end
 end

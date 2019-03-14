@@ -9,7 +9,7 @@ RSpec.describe Product, type: :model do
 
     it 'reject negative amount' do
       expect{
-        Product.create(:name => "product.name", :purchase_price => 1.25, :sale_price => 1.95, :amount => -1 )
+        FactoryBot.create(:product, :amount => -1 )
       }.to raise_error("amount can not be negative")
     end
   end

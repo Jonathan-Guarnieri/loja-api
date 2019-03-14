@@ -1,12 +1,14 @@
 class Product < ApplicationRecord
 
+  has_many :order_item
+
   validates :name, presence: true
-  # validates :purchase_price, optional: true # "optional: true" neste caso não é default? tem que declarar?
-  # validates :sale_price, optional: true
+  validates :purchase_price, presence: true
+  validates :sale_price, presence: true
   validates :amount, presence: true
   validate :amount_validation
 
-  private # pq usar o private?
+  private
   
   def amount_validation
     raise "amount can not be negative" if amount.negative?

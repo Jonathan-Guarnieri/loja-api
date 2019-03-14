@@ -1,7 +1,7 @@
 require 'rails_helper'
+require 'support/auth_params_helper'
 
 RSpec.describe SessionsController, type: :request do
-  # let(:user) { FactoryBot.create(:user) }
 
   context "login" do
     context "valid user login" do
@@ -102,7 +102,7 @@ RSpec.describe SessionsController, type: :request do
       expect(response.status).to eq(200)
     end
 
-    xit "invalid credentials" do
+    it "invalid credentials" do
       headers = {
         "access-token": "access-token",
         "uid": "uid",

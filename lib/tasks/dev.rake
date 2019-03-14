@@ -4,7 +4,6 @@ namespace :dev do
         puts "cadastrando usuários..."
         10.times do
             User.create!(
-                uid: Faker::Name.unique.first_name, # ????????????????????
                 name: Faker::Name.unique.name,
                 role: ["manager", "seller"].sample,
                 email: Faker::Internet.email,

@@ -8,16 +8,11 @@ RSpec.describe User, type: :model do
       expect{user.save!}.to change{User.count}.by(1)
     end
 
-    it 'return ArgumentError for invalid role' do
-      expect{
-        User.new(:name => "user.name", :role => "invalid role", :email => "user.email", :password => "user.password" )
-      }.to raise_error(ArgumentError)
+    it 'denies invalid role' do
+      expect{ FactoryBot.build(:user, role: "invalid_role") }.to raise_error(/is not a valid role/)
     end
 
-    # it 'return ArgumentError for invalid password' do
-    # VALIDAÇÃO DO TAMANHO MÍNIMO DA PASSWORD: FAZER NO FRONT-END!!!
-    #   expect{FactoryBot.create(:user, password: "")}.to raise_error(ArgumentError)
-    # end
-
+    # email tratado pelo devise
+    # password tratada em config/initializers/devise.rb
   end
 end

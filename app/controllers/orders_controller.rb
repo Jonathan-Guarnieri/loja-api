@@ -1,21 +1,20 @@
 class OrdersController < ApplicationController
 
   before_action :set_order, only: [:show, :update, :destroy]
-  skip_before_action :authenticate_user!
 
   def index
     @orders = Order.all
-    render json: @orders
+    render json: @orders, include: :order_item
   end
 
   def show
-    render json: @order
+    render json: @order, include: :order_item
   end
 
   def create
-    @order = Order.create(order_params)
+    @order = Order.new(order_params.merge(user_id: current_user.id))
     if @order.save
-      render json: @order, status: :created
+      render json: @order, include: :order_item, status: :created
     else
       render json: @order.errors
     end
@@ -23,13 +22,15 @@ class OrdersController < ApplicationController
 
   def update
     if @order.update(order_params)
-      render json: @order
+      render json: @order, include: :order_item
     else
       render json: @order.errors, stauts: :unprocessable_entity
     end
   end
 
   def destroy
+    authorize current_user
+    raise "Order can only be deleted if it has the canceled status" unless ( @order.status == "canceled" )
     @order.destroy
     head :no_content
   end
@@ -43,7 +44,9 @@ class OrdersController < ApplicationController
   def order_params
     params.require(:order).permit(
       :contact_id,
-      :status
+      :status,
+      :order_type,
+      :order_item_attributes => [:product_id, :quantity, :item_price, :id, :_destroy]
     )
   end
 

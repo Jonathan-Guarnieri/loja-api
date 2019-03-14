@@ -25,8 +25,7 @@ RSpec.describe ProductsController, type: :request do
   describe 'POST #create' do
     it "Create product, verify attributes" do
       product = FactoryBot.build(:product)
-      product_params = {"product": { "name": product.name, "purchase_price": product.purchase_price, 
-              "sale_price": product.sale_price, "amount": product.amount }}
+      product_params = {"product": product.as_json}
       post '/products', params: product_params.merge(get_auth_params)
       response_json = JSON.parse(response.body, symbolize_names: true)
       expect(response_json[:name]).to eq(product.name)
@@ -37,8 +36,7 @@ RSpec.describe ProductsController, type: :request do
 
     it 'return status 201 :created' do
       product = FactoryBot.build(:product)
-      product_params = {"product": { "name": product.name, "purchase_price": product.purchase_price, 
-              "sale_price": product.sale_price, "amount": product.amount }}
+      product_params = {"product": product.as_json}
       post '/products', params: product_params.merge(get_auth_params)
       expect(response).to have_http_status(:created)
     end
@@ -75,8 +73,8 @@ RSpec.describe ProductsController, type: :request do
   describe 'PUT #update' do
     it 'rename a product' do
       product = FactoryBot.create(:product)
-      product_params = {"product": { "name": "altered name", "purchase_price": product.purchase_price, 
-              "sale_price": product.sale_price, "amount": product.amount }}
+      product.name = "altered name"
+      product_params = {"product": product.as_json}
       put "/products/#{product.id}", params: product_params.merge(get_auth_params)
       response_json = JSON.parse(response.body, symbolize_names: true)
       expect(response_json[:name]).to eq("altered name")
@@ -84,16 +82,16 @@ RSpec.describe ProductsController, type: :request do
 
     it 'return status 200 :ok' do
       product = FactoryBot.create(:product) 
-      product_params = {"product": { "name": "altered name", "purchase_price": product.purchase_price, 
-              "sale_price": product.sale_price, "amount": product.amount }}
+      product.name = "altered name"
+      product_params = {"product": product.as_json}
       put "/products/#{product.id}", params: product_params.merge(get_auth_params)
       expect(response).to have_http_status(:ok)
     end
 
     it 'return status 404 :not_found' do
       product = FactoryBot.create(:product)
-      product_params = {"product": { "name": "altered name", "purchase_price": product.purchase_price, 
-              "sale_price": product.sale_price, "amount": product.amount }}
+      product.name = "altered name"
+      product_params = {"product": product.as_json}
       put "/products/#{product.id + 1}", params: product_params.merge(get_auth_params)
       expect(response).to have_http_status(:not_found)
     end
@@ -102,21 +100,41 @@ RSpec.describe ProductsController, type: :request do
   #############################################################################
   describe 'DELETE #destroy' do
     it 'delete a product' do
-      product = FactoryBot.create(:product)
+      product = FactoryBot.create(:product, amount: 0)
       delete "/products/#{product.id}", params: get_auth_params
       expect(response).to have_http_status(204)
     end
 
     it 'return status 204 :no_content' do
-      product = FactoryBot.create(:product)
+      product = FactoryBot.create(:product, amount: 0)
       delete "/products/#{product.id}", params: get_auth_params
       expect(response).to have_http_status(:no_content)
     end
 
     it 'return status 404 :not_found' do
-      product = FactoryBot.create(:product)
+      product = FactoryBot.create(:product, amount: 0)
       delete "/products/#{product.id + 1}", params: get_auth_params
       expect(response).to have_http_status(:not_found)
+    end
+
+    it 'denies delete for seller' do
+      product = FactoryBot.create(:product, amount: 0)
+      expect{ delete "/products/#{product.id}", params: get_auth_params("seller") 
+      }.to raise_error(Pundit::NotAuthorizedError)
+    end
+
+    it 'denies delete for product with order' do
+      product = FactoryBot.create(:product, amount: 0)
+      order_item = FactoryBot.build(:order_item, product_id: product.id)
+      order_params = FactoryBot.create(:order, order_item_attributes: order_item.as_json)
+      expect{ delete "/products/#{product.id}", params: get_auth_params
+      }.to raise_error(/is still referenced from table "order_items"/)
+    end
+
+    it 'denies delete for amount different by zero' do
+      product = FactoryBot.create(:product, amount: 1)
+      expect{ delete "/products/#{product.id}", params: get_auth_params
+      }.to raise_error("it`s not possible delete products with amount")
     end
   end
 

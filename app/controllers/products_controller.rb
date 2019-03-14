@@ -29,6 +29,8 @@ class ProductsController < ApplicationController
   end
 
   def destroy
+    authorize current_user
+    raise "it`s not possible delete products with amount" unless ( Product.find(params[:id]).amount == 0 )
     @product.destroy
     head :no_content
   end
